@@ -16,6 +16,7 @@ import { Schematic } from "@tscircuit/schematic-viewer"
 import { transformSchematicElements } from "@tscircuit/builder"
 import { Network } from "vis-network"
 import { translate } from "transformation-matrix"
+import { buildLayoutEdges } from "./lib/layout-edges"
 
 const nodes = initialSoup
   .filter((e) => e.type === "schematic_component")
@@ -33,22 +34,7 @@ const nodes = initialSoup
     }
   })
 
-const edges = initialSoup
-  .filter((e) => e.type === "source_trace")
-  .map(
-    (st: { source_trace_id: string; connected_source_port_ids: string[] }) => {
-      const sps = initialSoup.filter(
-        (e) =>
-          e.type === "source_port" &&
-          st.connected_source_port_ids.includes(e.source_port_id)
-      )
-
-      return {
-        from: sps[0].source_component_id,
-        to: sps[1].source_component_id,
-      }
-    }
-  )
+const edges = buildLayoutEdges(initialSoup)
 
 function App() {
   // const [network, setNetwork] = useState<any>(null)
